@@ -1,65 +1,55 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Hotel;
 
+use App\Http\Controllers\Controller;
 use App\Models\RoomType;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class RoomTypeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): Response
     {
-        //
+        return Inertia::render('hotel-manager/roomtype', [
+            'roomtype' => RoomType::all(),
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request): RedirectResponse
     {
-        //
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'base_price_per_night' => ['required', 'numeric', 'min:0'],
+            'max_occupancy' => ['required', 'integer', 'min:1', 'max:20'],
+        ]);
+
+        RoomType::create($validated);
+
+        return back();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function update(Request $request, RoomType $roomType): RedirectResponse
     {
-        //
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'base_price_per_night' => ['required', 'numeric', 'min:0'],
+            'max_occupancy' => ['required', 'integer', 'min:1', 'max:20'],
+        ]);
+
+        $roomType->update($validated);
+
+        return back();
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(RoomType $roomType)
+    public function destroy(RoomType $roomType): RedirectResponse
     {
-        //
-    }
+        $roomType->delete();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(RoomType $roomType)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, RoomType $roomType)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(RoomType $roomType)
-    {
-        //
+        return back();
     }
 }

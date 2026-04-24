@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Database\Factories\HotelBookingFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[Fillable(['booking_reference', 'user_id', 'room_id', 'check_in', 'check_out', 'guests', 'status'])]
 class HotelBooking extends Model
 {
     /** @use HasFactory<HotelBookingFactory> */

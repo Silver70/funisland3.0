@@ -1,65 +1,56 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Hotel;
 
+use App\Http\Controllers\Controller;
 use App\Models\Room;
+use App\Models\RoomType;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class RoomController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): Response
     {
-        //
+        return Inertia::render('hotel-manager/room', [
+            'rooms' => Room::with('roomType')->get(),
+            'roomTypes' => RoomType::all(['id', 'name']),
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request): RedirectResponse
     {
-        //
+        $validated = $request->validate([
+            'room_number' => ['required', 'string', 'max:20', 'unique:rooms,room_number'],
+            'room_type_id' => ['required', 'integer', 'exists:room_types,id'],
+            'status' => ['required', 'string', Rule::in(['available', 'occupied', 'maintenance'])],
+        ]);
+
+        Room::create($validated);
+
+        return back();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function update(Request $request, Room $room): RedirectResponse
     {
-        //
+        $validated = $request->validate([
+            'room_number' => ['required', 'string', 'max:20', Rule::unique('rooms', 'room_number')->ignore($room->id)],
+            'room_type_id' => ['required', 'integer', 'exists:room_types,id'],
+            'status' => ['required', 'string', Rule::in(['available', 'occupied', 'maintenance'])],
+        ]);
+
+        $room->update($validated);
+
+        return back();
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Room $room)
+    public function destroy(Room $room): RedirectResponse
     {
-        //
-    }
+        $room->delete();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Room $room)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Room $room)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Room $room)
-    {
-        //
+        return back();
     }
 }
