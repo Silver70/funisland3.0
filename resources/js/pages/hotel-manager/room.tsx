@@ -1,5 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
+
+const PER_PAGE = 10;
 import { destroy, store, update } from '@/actions/App/Http/Controllers/Hotel/RoomController';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -111,6 +113,10 @@ export default function RoomPage({ rooms, roomTypes }: Props) {
     const [createOpen, setCreateOpen] = useState(false);
     const [editTarget, setEditTarget] = useState<Room | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<Room | null>(null);
+    const [page, setPage] = useState(1);
+
+    const totalPages = Math.max(1, Math.ceil(rooms.length / PER_PAGE));
+    const paginated = rooms.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
     const createForm = useForm({ room_number: '', room_type_id: '', status: '' });
     const editForm = useForm({ room_number: '', room_type_id: '', status: '' });
@@ -160,7 +166,7 @@ export default function RoomPage({ rooms, roomTypes }: Props) {
                             </tr>
                         </thead>
                         <tbody>
-                            {rooms.map((room) => (
+                            {paginated.map((room) => (
                                 <tr
                                     key={room.id}
                                     className="border-b border-sidebar-border/40 last:border-0 dark:border-sidebar-border/40"
@@ -207,6 +213,31 @@ export default function RoomPage({ rooms, roomTypes }: Props) {
                             )}
                         </tbody>
                     </table>
+                    {rooms.length > 0 && (
+                        <div className="flex items-center justify-between border-t border-sidebar-border/70 px-4 py-3 text-sm dark:border-sidebar-border">
+                            <span className="text-muted-foreground">
+                                Showing {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, rooms.length)} of {rooms.length}
+                            </span>
+                            <div className="flex gap-2">
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={page === 1}
+                                    onClick={() => setPage((p) => p - 1)}
+                                >
+                                    Previous
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={page === totalPages}
+                                    onClick={() => setPage((p) => p + 1)}
+                                >
+                                    Next
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

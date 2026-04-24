@@ -1,5 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
+
+const PER_PAGE = 10;
 import { cancel, store, update } from '@/actions/App/Http/Controllers/Hotel/HotelBookingController';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,8 +21,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { index } from '@/routes/hotel-manager/bookings';
 import { dashboard } from '@/routes/hotel-manager';
+import { index } from '@/routes/hotel-manager/bookings';
+
 
 interface User {
     id: number;
@@ -174,6 +177,10 @@ export default function BookingsPage({ bookings, rooms, users }: Props) {
     const [createOpen, setCreateOpen] = useState(false);
     const [editTarget, setEditTarget] = useState<HotelBooking | null>(null);
     const [cancelTarget, setCancelTarget] = useState<HotelBooking | null>(null);
+    const [page, setPage] = useState(1);
+
+    const totalPages = Math.max(1, Math.ceil(bookings.length / PER_PAGE));
+    const paginated = bookings.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
     const createForm = useForm({
         user_id: '',
@@ -243,7 +250,7 @@ export default function BookingsPage({ bookings, rooms, users }: Props) {
                             </tr>
                         </thead>
                         <tbody>
-                            {bookings.map((booking) => (
+                            {paginated.map((booking) => (
                                 <tr
                                     key={booking.id}
                                     className="border-b border-sidebar-border/40 last:border-0 dark:border-sidebar-border/40"
@@ -295,6 +302,31 @@ export default function BookingsPage({ bookings, rooms, users }: Props) {
                             )}
                         </tbody>
                     </table>
+                    {bookings.length > 0 && (
+                        <div className="flex items-center justify-between border-t border-sidebar-border/70 px-4 py-3 text-sm dark:border-sidebar-border">
+                            <span className="text-muted-foreground">
+                                Showing {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, bookings.length)} of {bookings.length}
+                            </span>
+                            <div className="flex gap-2">
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={page === 1}
+                                    onClick={() => setPage((p) => p - 1)}
+                                >
+                                    Previous
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={page === totalPages}
+                                    onClick={() => setPage((p) => p + 1)}
+                                >
+                                    Next
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

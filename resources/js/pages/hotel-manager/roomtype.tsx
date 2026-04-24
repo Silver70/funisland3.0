@@ -1,5 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
+
+const PER_PAGE = 10;
 import { destroy, store, update } from '@/actions/App/Http/Controllers/Hotel/RoomTypeController';
 import { Button } from '@/components/ui/button';
 import {
@@ -96,6 +98,10 @@ export default function RoomTypePage({ roomtype }: Props) {
     const [createOpen, setCreateOpen] = useState(false);
     const [editTarget, setEditTarget] = useState<RoomType | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<RoomType | null>(null);
+    const [page, setPage] = useState(1);
+
+    const totalPages = Math.max(1, Math.ceil(roomtype.length / PER_PAGE));
+    const paginated = roomtype.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
     const createForm = useForm({
         name: '',
@@ -157,7 +163,7 @@ export default function RoomTypePage({ roomtype }: Props) {
                             </tr>
                         </thead>
                         <tbody>
-                            {roomtype.map((type) => (
+                            {paginated.map((type) => (
                                 <tr
                                     key={type.id}
                                     className="border-b border-sidebar-border/40 last:border-0 dark:border-sidebar-border/40"
@@ -201,6 +207,31 @@ export default function RoomTypePage({ roomtype }: Props) {
                             )}
                         </tbody>
                     </table>
+                    {roomtype.length > 0 && (
+                        <div className="flex items-center justify-between border-t border-sidebar-border/70 px-4 py-3 text-sm dark:border-sidebar-border">
+                            <span className="text-muted-foreground">
+                                Showing {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, roomtype.length)} of {roomtype.length}
+                            </span>
+                            <div className="flex gap-2">
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={page === 1}
+                                    onClick={() => setPage((p) => p - 1)}
+                                >
+                                    Previous
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={page === totalPages}
+                                    onClick={() => setPage((p) => p + 1)}
+                                >
+                                    Next
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
