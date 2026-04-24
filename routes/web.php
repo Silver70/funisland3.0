@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserManagementController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -16,6 +17,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])
     ->name('admin.')
     ->group(function () {
         Route::inertia('dashboard', 'admin/dashboard')->name('dashboard');
+        Route::get('userList', [UserManagementController::class, 'index'])->name('userList');
+        Route::put('users/{user}/role', [UserManagementController::class, 'updateRole'])->name('users.updateRole');
     });
 
 Route::middleware(['auth', 'verified', 'role:hotel manager'])
