@@ -13,6 +13,8 @@ class Room extends Model
     /** @use HasFactory<RoomFactory> */
     use HasFactory;
 
+    public $timestamps = false;
+
     public function roomType(): BelongsTo
     {
         return $this->belongsTo(RoomType::class);

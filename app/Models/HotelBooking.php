@@ -12,6 +12,8 @@ class HotelBooking extends Model
     /** @use HasFactory<HotelBookingFactory> */
     use HasFactory;
 
+    public $timestamps = false;
+
     public function room(): BelongsTo
     {
         return $this->belongsTo(Room::class);

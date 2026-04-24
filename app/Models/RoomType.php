@@ -12,6 +12,8 @@ class RoomType extends Model
     /** @use HasFactory<RoomTypeFactory> */
     use HasFactory;
 
+    public $timestamps = false;
+
     public function rooms(): HasMany
     {
         return $this->hasMany(Room::class);

@@ -11,14 +11,17 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class RoomTypeFactory extends Factory
 {
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->unique()->randomElement([
+                'Standard', 'Deluxe', 'Suite', 'Family', 'Executive', 'Budget', 'Junior Suite', 'Penthouse',
+            ]),
+            'description' => fake()->optional(0.8)->paragraph(),
+            'base_price_per_night' => fake()->randomFloat(2, 40, 600),
+            'max_occupancy' => fake()->numberBetween(1, 4),
         ];
     }
 }
